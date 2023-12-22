@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/android-chrome-192x192.png">
+
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="tube.css">
+    <link rel="stylesheet" href="generator.css">
+    <title>Generator</title>
+</head>
+<body>
+
+    <section class="landing_page">
+        <div class="banner bg-cover bg-center h-[5.7rem] bg-white">
+            <div class="navbar">
+              <a href="index.html">
+                <img src="assets/logo1.png" class="logo" alt="Company Logo" width="250px">
+            </a>
+            
+                <div class="items flex gap-[20rem]">
+               <div><ul>
+    
+                    <li class =" text-richBlack font-sans py-[0.9rem] hover:text-orange-500 cursor-pointer
+                    hover:border-b-orange-500 hover:border-b-[3.9px] px-1 ">
+                        <a   class="hover:text-orange-500 border-b-orange-500 whitespace-nowrap" href="#">Features</a></li>
+    
+                        <li class =" text-richBlack font-sans py-[0.9rem] hover:text-orange-500 cursor-pointer
+                        hover:border-b-orange-500 hover:border-b-[3.9px] px-1 ">
+                            <a   class="hover:text-orange-500 border-b-orange-500 whitespace-nowrap" href="#">About US</a></li>
+    
+    
+                            <li class =" text-richBlack font-sans py-[0.9rem] hover:text-orange-500 cursor-pointer
+                            hover:border-b-orange-500 hover:border-b-[3.9px] px-1 ">
+                                <a   class="hover:text-orange-500 border-b-orange-500 whitespace-nowrap" href="contact">Contact</a></li>
+    
+                </ul></div> 
+    
+                <div class="btngrp">
+                    <div class="flex gap-7 text-center items-center justify-center">
+                      <button  type="button" onclick="redirectToLogin()" class="simple text-center cursor-pointer text-base">Login</button>
+
+    
+                        <button type="button" class="w-32 h-10 my-2 rounded-full whitespace-nowrap  hover:text-orange-500 hover:bg-black " style="background: linear-gradient(168deg, rgba(255,115,22,1) 44%, rgba(197,11,11,1) 79%, rgba(0,0,0,0.8184523809523809) 97%);">Sign-Up</button>
+
+                        <script>
+                          function redirectToLogin() {
+                              window.location.href = './login.html';
+                          }</script>
+                    </div>
+                </div>
+            </div>
+                
+            </div>
+   
+    
+            </div>
+    
+    </section>
+    
+
+    <section>
+        <div class="section-box">
+            <div class="canvas-wrapper">
+              <div>
+                <label for="canvas-width">Enter Canvas Width :</label>
+                <input type="number" id="canvas-width">
+              </div>
+              <div>
+                <label for="canvas-height">Enter Canvas Height :</label>
+                <input type="number" id="canvas-height">
+              </div>
+              <button onclick="createCanvas()" class="mt-4 py-2 px-5 bg-orange-500 text-white border-none border-r-4 cursor-pointer font-normal mb-3">Create Canvas</button>
+              <div class="canvas" id="canvas" onclick="addRoom(event)"></div>
+              <button class="save-btn" onclick="saveFloorPlan()">Save Floor Plan</button>
+            </div>
+          </div>
+    </section>
+
+    <script>
+        
+        let canvasWidth, canvasHeight;
+let canvas;
+
+function createCanvas() {
+  canvasWidth = parseInt(document.getElementById('canvas-width').value);
+  canvasHeight = parseInt(document.getElementById('canvas-height').value);
+
+  if (isNaN(canvasWidth) || isNaN(canvasHeight) || canvasWidth <= 0 || canvasHeight <= 0) {
+    alert('Please enter valid dimensions for the canvas.');
+    return;
+  }
+
+  const canvasContainer = document.getElementById('canvas');
+  canvasContainer.style.width = `${canvasWidth}px`;
+  canvasContainer.style.height = `${canvasHeight}px`;
+  canvasContainer.style.border = '2px solid #ccc';
+  canvasContainer.style.backgroundColor = '#f0f0f0';
+  canvasContainer.style.marginTop = '20px';
+  canvasContainer.style.position = 'relative';
+  canvasContainer.style.overflow = 'hidden';
+
+  canvas = canvasContainer;
+
+  const header = document.querySelector('.header');
+  header.innerHTML = '<h1>Welcome to Vaastu - Floor Plan Generator</h1>';
+}
+
+let isDragging = false;
+let activeRoom = null;
+let offsetX = 0;
+let offsetY = 0;
+
+const rooms = [];
+
+function addRoom(event) {
+  if (!canvas) {
+    alert('Please create a canvas first.');
+    return;
+  }
+
+  const roomName = prompt('Enter Room Name (Bedroom, Hall, Kitchen):');
+  const width = parseInt(prompt('Enter Width (in pixels):'));
+  const height = parseInt(prompt('Enter Height (in pixels):'));
+
+  if (!roomName || isNaN(width) || isNaN(height)) {
+    alert('Please provide valid inputs for room dimensions.');
+    return;
+  }
+
+  const newRoom = {
+    name: roomName,
+    width,
+    height,
+    x: event.clientX - canvas.getBoundingClientRect().left,
+    y: event.clientY - canvas.getBoundingClientRect().top,
+  };
+
+  rooms.push(newRoom);
+  renderRooms();
+}
+
+function renderRooms() {
+  if (!canvas) {
+    alert('Please create a canvas first.');
+    return;
+  }
+
+  canvas.innerHTML = '';
+  rooms.forEach((room, index) => {
+    const roomElement = document.createElement('div');
+    roomElement.className = 'room';
+    roomElement.style.left = `${room.x}px`;
+    roomElement.style.top = `${room.y}px`;
+    roomElement.style.width = `${room.width}px`;
+    roomElement.style.height = `${room.height}px`;
+
+    const dimensions = document.createElement('div');
+    dimensions.className = 'dimensions';
+    dimensions.textContent = `${room.name} - ${room.width} x ${room.height}`;
+
+    roomElement.appendChild(dimensions);
+    canvas.appendChild(roomElement);
+
+    roomElement.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      activeRoom = index;
+      offsetX = e.offsetX;
+      offsetY = e.offsetY;
+    });
+
+    roomElement.addEventListener('mouseup', () => {
+      isDragging = false;
+      activeRoom = null;
+    });
+  });
+}
+
+function moveRoom(event) {
+  if (!canvas || !isDragging || activeRoom === null) {
+    return;
+  }
+
+  const room = rooms[activeRoom];
+  room.x = event.clientX - offsetX - canvas.getBoundingClientRect().left;
+  room.y = event.clientY - offsetY - canvas.getBoundingClientRect().top;
+  renderRooms();
+}
+
+document.addEventListener('mousemove', moveRoom);
+
+function isUserLoggedIn() {
+    return new Promise((resolve) => {
+        firebase.auth().onAuthStateChanged((user) => {
+            resolve(user !== null);
+        });
+    });
+}
+
+
+function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+
+
+function saveFloorPlan() {
+  if (!canvas) {
+    alert('Please create a canvas first.');
+    return;
+  }
+
+  const svgData = new XMLSerializer().serializeToString(canvas);
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const svgUrl = URL.createObjectURL(svgBlob);
+
+  const link = document.createElement('a');
+  link.href = svgUrl;
+  link.download = 'floor_plan.svg';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// async function saveFloorPlan() {
+    
+//     if (!(await isUserLoggedIn())) {
+//         // If not logged in, redirect to the login page
+//         redirectToLogin();
+//         return;
+//     }
+
+//     if (!canvas) {
+//     alert('Please create a canvas first.');
+//     return;
+//   }
+
+//   const svgData = new XMLSerializer().serializeToString(canvas);
+//   const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+//   const svgUrl = URL.createObjectURL(svgBlob);
+
+//   const link = document.createElement('a');
+//   link.href = svgUrl;
+//   link.download = 'floor_plan.svg';
+//   document.body.appendChild(link);
+//   link.click();
+//   document.body.removeChild(link);
+
+   
+// }
+       
+
+      
+    
+
+      
+      
+
+
+
+
+    </script>
+</body>
+</html>

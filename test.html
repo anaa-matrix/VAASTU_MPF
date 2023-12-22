@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Floorplan Creator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .button-section {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .create-floorplan-button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 30px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background-color: #4CAF50;
+      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+      transition: left 0.3s;
+    }
+
+    .create-floorplan-button:hover + .arrow {
+      left: 120%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="button-section">
+    <button class="create-floorplan-button">Create Your Floorplan</button>
+    <div class="arrow"></div>
+  </div>
+
+</body>
+</html>
